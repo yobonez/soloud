@@ -33,7 +33,7 @@ namespace SoLoud
 	result sdl1_init(SoLoud::Soloud *aSoloud, unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aSamplerate = 44100, unsigned int aBuffer = 2048, unsigned int aChannels = 2);
 
 	// SDL2 back-end initialization call
-	result sdl2_init(SoLoud::Soloud *aSoloud, unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aSamplerate = 44100, unsigned int aBuffer = 2048, unsigned int aChannels = 2);
+	result sdl2_init(const char* deviceName, SoLoud::Soloud *aSoloud, unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aSamplerate = 44100, unsigned int aBuffer = 2048, unsigned int aChannels = 2);
 
 	// SDL1 "non-dynamic" back-end initialization call
 	result sdl1static_init(SoLoud::Soloud *aSoloud, unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aSamplerate = 44100, unsigned int aBuffer = 2048, unsigned int aChannels = 2);
@@ -88,6 +88,8 @@ namespace SoLoud
 
 	// Convert to 16-bit and interlace samples in a buffer. From 11112222 to 12121212
 	void interlace_samples_s16(const float *aSourceBuffer, short *aDestBuffer, unsigned int aSamples, unsigned int aChannels, unsigned int aStride);
+
+	void soloud_sdl2_getAudioDevices(int iscapture);
 };
 
 #define FOR_ALL_VOICES_PRE \

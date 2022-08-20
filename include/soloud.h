@@ -227,7 +227,7 @@ namespace SoLoud
 		};
 
 		// Initialize SoLoud. Must be called before SoLoud can be used.
-		result init(unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aBackend = Soloud::AUTO, unsigned int aSamplerate = Soloud::AUTO, unsigned int aBufferSize = Soloud::AUTO, unsigned int aChannels = 2);
+		result init(const char* deviceName = NULL, unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aBackend = Soloud::AUTO, unsigned int aSamplerate = Soloud::AUTO, unsigned int aBufferSize = Soloud::AUTO, unsigned int aChannels = 2);
 
 		result pause();
 		result resume();
@@ -288,6 +288,8 @@ namespace SoLoud
 		// Oscillate a live filter parameter. Use 0 for the global filters.
 		void oscillateFilterParameter(handle aVoiceHandle, unsigned int aFilterId, unsigned int aAttributeId, float aFrom, float aTo, time aTime);
 
+		// Get (print out) all input devices
+		static void getAudioDevices();
 		// Get current play time, in seconds.
 		time getStreamTime(handle aVoiceHandle);
 		// Get current sample position, in seconds.

@@ -82,7 +82,7 @@ int Soloud_init(void * aClassPtr)
 int Soloud_initEx(void * aClassPtr, unsigned int aFlags, unsigned int aBackend, unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aChannels)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
-	return cl->init(aFlags, aBackend, aSamplerate, aBufferSize, aChannels);
+	return cl->init(NULL, aFlags, aBackend, aSamplerate, aBufferSize, aChannels);
 }
 
 void Soloud_deinit(void * aClassPtr)

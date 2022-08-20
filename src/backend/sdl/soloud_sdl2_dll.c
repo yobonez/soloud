@@ -21,6 +21,7 @@ freely, subject to the following restrictions:
    3. This notice may not be removed or altered from any source
    distribution.
 */
+
 #if defined(WITH_SDL2)
 
 #include <stdlib.h>
@@ -42,11 +43,17 @@ typedef void              (*SDL2_CloseAudioDevice_t)(SDL_AudioDeviceID dev);
 typedef void              (*SDL2_PauseAudioDevice_t)(SDL_AudioDeviceID dev,
 												     int               pause_on);
 
+typedef int               (*SDL2_GetNumAudioDevices_t)(int iscapture);
+typedef const char*       (*SDL2_GetAudioDeviceName_t)(int index,
+	                                                   int iscapture);
+
 static SDL2_WasInit_t SDL2_WasInit = NULL;
 static SDL2_InitSubSystem_t SDL2_InitSubSystem = NULL;
 static SDL2_OpenAudioDevice_t SDL2_OpenAudioDevice = NULL;
 static SDL2_CloseAudioDevice_t SDL2_CloseAudioDevice = NULL;
 static SDL2_PauseAudioDevice_t SDL2_PauseAudioDevice = NULL;
+static SDL2_GetNumAudioDevices_t SDL2_GetNumAudioDevices = NULL;
+static SDL2_GetAudioDeviceName_t SDL2_GetAudioDeviceName = NULL;
 
 #ifdef WINDOWS_VERSION
 #include <windows.h>
@@ -103,12 +110,16 @@ static int sdl2_load_dll()
 		SDL2_OpenAudioDevice = (SDL2_OpenAudioDevice_t)sdl2_getDllProc(dll, "SDL_OpenAudioDevice");
 		SDL2_CloseAudioDevice = (SDL2_CloseAudioDevice_t)sdl2_getDllProc(dll, "SDL_CloseAudioDevice");
 		SDL2_PauseAudioDevice = (SDL2_PauseAudioDevice_t)sdl2_getDllProc(dll, "SDL_PauseAudioDevice");
+		SDL2_GetNumAudioDevices = (SDL2_GetNumAudioDevices_t)sdl2_getDllProc(dll, "SDL_GetNumAudioDevices");
+		SDL2_GetAudioDeviceName = (SDL2_GetAudioDeviceName_t)sdl2_getDllProc(dll, "SDL_GetAudioDeviceName");
 
         if (SDL2_WasInit &&
         	SDL2_InitSubSystem &&
         	SDL2_OpenAudioDevice &&
 			SDL2_CloseAudioDevice &&
-			SDL2_PauseAudioDevice)
+			SDL2_PauseAudioDevice &&
+			SDL2_GetNumAudioDevices &&
+			SDL2_GetAudioDeviceName)
         {
         	return 1;
         }
@@ -160,4 +171,19 @@ void dll_SDL2_PauseAudioDevice(SDL_AudioDeviceID dev,
 		SDL2_PauseAudioDevice(dev, pause_on);
 }
 
+int dll_SDL2_GetNumAudioDevices(int iscapture)
+{
+	if (SDL2_GetNumAudioDevices) {
+		return SDL2_GetNumAudioDevices(iscapture);
+	}
+}
+
+const char* dll_SDL2_GetAudioDeviceName(int index,
+	                                    int iscapture)
+{
+	if (SDL2_GetAudioDeviceName)
+	{
+		return SDL2_GetAudioDeviceName(index, iscapture);
+	}
+}
 #endif

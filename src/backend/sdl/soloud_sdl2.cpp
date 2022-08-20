@@ -21,6 +21,7 @@ freely, subject to the following restrictions:
    3. This notice may not be removed or altered from any source
    distribution.
 */
+
 #include <stdlib.h>
 
 #include "soloud.h"
@@ -55,6 +56,9 @@ extern "C"
 	void dll_SDL2_CloseAudioDevice(SDL_AudioDeviceID dev);
 	void dll_SDL2_PauseAudioDevice(SDL_AudioDeviceID dev,
 								   int               pause_on);
+
+	const char* dll_SDL2_GetAudioDeviceName(int index, int iscapture);
+	int dll_SDL2_GetNumAudioDevices(int iscapture);
 };
 
 
@@ -83,7 +87,7 @@ namespace SoLoud
 		dll_SDL2_CloseAudioDevice(gAudioDeviceID);
 	}
 
-	result sdl2_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
+	result sdl2_init(const char* deviceName, SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
 	{
 		if (!dll_SDL2_found())
 			return DLL_NOT_FOUND;
@@ -104,11 +108,11 @@ namespace SoLoud
 		as.callback = soloud_sdl2_audiomixer;
 		as.userdata = (void*)aSoloud;
 
-		gAudioDeviceID = dll_SDL2_OpenAudioDevice(NULL, 0, &as, &gActiveAudioSpec, SDL_AUDIO_ALLOW_ANY_CHANGE & ~(SDL_AUDIO_ALLOW_FORMAT_CHANGE | SDL_AUDIO_ALLOW_CHANNELS_CHANGE));
+		gAudioDeviceID = dll_SDL2_OpenAudioDevice(deviceName, 0, &as, &gActiveAudioSpec, SDL_AUDIO_ALLOW_ANY_CHANGE & ~(SDL_AUDIO_ALLOW_FORMAT_CHANGE | SDL_AUDIO_ALLOW_CHANNELS_CHANGE));
 		if (gAudioDeviceID == 0)
 		{
 			as.format = AUDIO_S16;
-			gAudioDeviceID = dll_SDL2_OpenAudioDevice(NULL, 0, &as, &gActiveAudioSpec, SDL_AUDIO_ALLOW_ANY_CHANGE & ~(SDL_AUDIO_ALLOW_FORMAT_CHANGE | SDL_AUDIO_ALLOW_CHANNELS_CHANGE));
+			gAudioDeviceID = dll_SDL2_OpenAudioDevice(deviceName, 0, &as, &gActiveAudioSpec, SDL_AUDIO_ALLOW_ANY_CHANGE & ~(SDL_AUDIO_ALLOW_FORMAT_CHANGE | SDL_AUDIO_ALLOW_CHANNELS_CHANGE));
 			if (gAudioDeviceID == 0)
 			{
 				return UNKNOWN_ERROR;
@@ -124,5 +128,13 @@ namespace SoLoud
 		return 0;
 	}
 	
+	void soloud_sdl2_getAudioDevices(int iscapture)
+	{
+		const int count = dll_SDL2_GetNumAudioDevices(iscapture);
+		for (int i = 0; i < count; ++i)
+		{
+			printf("Audio device %d: \"%s\"\n", i, dll_SDL2_GetAudioDeviceName(i, iscapture));
+		}
+	}
 };
 #endif

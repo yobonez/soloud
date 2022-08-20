@@ -22,6 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
+
 #include <string.h>
 #include <stdlib.h>
 #include <math.h> // sin
@@ -37,7 +38,6 @@ freely, subject to the following restrictions:
 #include <emmintrin.h>
 #endif
 #endif
-
 //#define FLOATING_POINT_DEBUG
 
 
@@ -204,7 +204,7 @@ namespace SoLoud
 		mAudioThreadMutex = NULL;
 	}
 
-	result Soloud::init(unsigned int aFlags, unsigned int aBackend, unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aChannels)
+	result Soloud::init(const char* deviceName, unsigned int aFlags, unsigned int aBackend, unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aChannels)
 	{		
 		if (aBackend >= BACKEND_MAX || aChannels == 3 || aChannels == 5 || aChannels == 7 || aChannels > MAX_CHANNELS)
 			return INVALID_PARAMETER;
@@ -268,7 +268,7 @@ namespace SoLoud
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
 
-			int ret = sdl2_init(this, aFlags, samplerate, buffersize, aChannels);
+			int ret = sdl2_init(deviceName, this, aFlags, samplerate, buffersize, aChannels);
 			if (ret == 0)
 			{
 				inited = 1;
@@ -2305,4 +2305,8 @@ namespace SoLoud
 		}
 	}
 
+	void Soloud::getAudioDevices()
+	{
+		soloud_sdl2_getAudioDevices(0);
+	}
 };
